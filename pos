@@ -1,0 +1,47 @@
+import nltk
+from collections import Counter
+
+
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
+
+
+
+text = """
+Natural Language Processing is a branch of Artificial Intelligence.
+Python is widely used for NLP applications.
+"""
+
+
+words = nltk.word_tokenize(text)
+
+
+
+
+pos_tags = nltk.pos_tag(words)
+
+
+print("POS TAGS:\n")
+print(pos_tags)
+
+
+
+
+noun_tags = ['NN', 'NNS', 'NNP', 'NNPS']
+
+
+nouns = [word for word, tag in pos_tags if tag in noun_tags]
+
+
+print("\nNOUNS PRESENT IN TEXT:\n")
+print(nouns)
+
+
+
+
+pos_frequency = Counter(tag for word, tag in pos_tags)
+
+
+print("\nFREQUENCY OF PARTS OF SPEECH:\n")
+print(dict(pos_frequency))
