@@ -1,0 +1,125 @@
+import pandas as pd
+
+corpus=['The sky is blue and beautiful.',
+        'Love This blue and beautiful sky!.',
+        'The quick brown fox jumps over the lazy dog.',
+        "A king's breakfast has sausages,ham,bacon,eggs,toast and beans",
+        'I love green eggs, ham , sausages and bacon!',
+        'The brown fox is quick and the blue dog is lazy!',
+        'The sky is vry blue and the sky is very beautiful today',
+        'The dog is lazy but the brown fox is quick!']
+
+labels=['weather','weather','animals','food','food','animals','weather','animals']
+
+import numpy as np
+corpus=np.array(corpus)
+
+corpus_df=pd.DataFrame({'Document':corpus,'Category':labels})
+
+corpus_df=corpus_df[['Document','Category']]
+
+corpus_df
+
+import nltk
+
+wpt=nltk.WordPunctTokenizer()
+
+nltk.download('stopwords')
+
+import re
+
+stop_words=nltk.corpus.stopwords.words('english')
+
+def normalize_document(doc):
+  doc=re.sub(r'[^a-zA-Z\s]','',doc,re.I|re.A)
+  doc=doc.lower()
+  doc=doc.strip()
+  tokens=wpt.tokenize(doc)
+  filtered_tokens=[token for token in tokens if token not in stop_words]
+  doc=" ".join(filtered_tokens)
+  return doc
+
+
+normalize_corpus=np.vectorize(normalize_document)
+
+norm_corpus=normalize_corpus(corpus)
+
+norm_corpus
+
+from sklearn.feature_extraction.text import CountVectorizer
+
+cv=CountVectorizer(min_df=0.0,max_df=1.0)
+
+cv_matrix=cv.fit_transform(norm_corpus)
+
+print(cv_matrix)
+
+cv.get_feature_names_out()
+
+cv_matrix=cv_matrix.toarray()
+
+cv_matrix
+
+vocab=cv.get_feature_names_out()
+
+df=pd.DataFrame(cv_matrix,columns=vocab)
+
+df
+
+words_totals=df.sum(axis=0)
+
+words_totals
+
+most_common=words_totals.sort_values(ascending=False)
+
+most_common
+
+
+most_common_df=most_common.reset_index()
+
+most_common_df.columns=["Word","Frequency"]
+most_common_df.head(10)
+
+Practice
+
+from nltk.corpus import gutenberg
+from nltk.tokenize import sent_tokenize
+
+import string
+
+nltk.download('gutenberg')
+nltk.download('punkt')
+nltk.download('punkt_tab')
+
+text=gutenberg.raw('austen-emma.txt')
+
+sentences=sent_tokenize(text)
+
+docs=sentences[:10]
+
+stop_words=nltk.corpus.stopwords.words('english')
+
+normalize_corpus=np.vectorize(normalize_document)
+
+norm_corpus=normalize_corpus(docs)
+
+norm_corpus
+
+cv=CountVectorizer(min_df=0.0,max_df=1.0)
+cv_matrix=cv.fit_transform(norm_corpus)
+cv_matrix=cv_matrix.toarray()
+
+cv_matrix
+
+vocab=cv.get_feature_names_out()
+
+df=pd.DataFrame(cv_matrix,columns=vocab)
+
+words_totals=df.sum(axis=0)
+
+most_common=words_totals.sort_values(ascending=False)
+
+most_common_df=most_common.reset_index()
+
+most_common_df.columns=["Word","Frequency"]
+most_common_df.head(10)
