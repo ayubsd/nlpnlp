@@ -1,21 +1,12 @@
+from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
 
-corpus=['The sky is blue and beautiful.',
-        'Love This blue and beautiful sky!.',
-        'The quick brown fox jumps over the lazy dog.',
-        "A king's breakfast has sausages,ham,bacon,eggs,toast and beans",
-        'I love green eggs, ham , sausages and bacon!',
-        'The brown fox is quick and the blue dog is lazy!',
-        'The sky is vry blue and the sky is very beautiful today',
-        'The dog is lazy but the brown fox is quick!']
+corpus=["ai ai ai hindi research","ai research ethics you","ai ethics ethics"]
 
-labels=['weather','weather','animals','food','food','animals','weather','animals']
+vector=TfidfVectorizer()
 
-import numpy as np
-corpus=np.array(corpus)
+tf=vector.fit_transform(corpus)
 
-corpus_df=pd.DataFrame({'Document':corpus,'Category':labels})
+tfdd=pd.DataFrame(tf.toarray(),columns=vector.get_feature_names_out())
 
-corpus_df=corpus_df[['Document','Category']]
-
-corpus_df
+tfdd
