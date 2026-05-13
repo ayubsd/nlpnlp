@@ -1,0 +1,58 @@
+import pandas as pd
+import tensorflow as tf
+import numpy as np
+from tensorflow.keras import layers
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import LabelEncoder
+
+# 1. Load a real dataset from the web
+url = "https://s.cleanlab.ai/banking-intent-classification.csv"
+df = pd.read_csv(url)
+
+
+#print df infor
+print(df.head())
+# List all unique text labels
+print("\n--- Unique Categories (Labels) ---")
+unique_labels = df['label'].unique()
+print(f"Total Categories: {len(unique_labels)}")
+print(unique_labels)
+print("\n--- Samples per Category ---")
+print(df['label'].value_counts())
+
+
+
+# 2. Encode Labels
+encoder = LabelEncoder()
+df['label_idx'] = encoder.fit_transform(df['label'])
+num_classes = len(encoder.classes_)
+
+# 3. Split Data
+train_text, test_text, train_labels, test_labels = train_test_split(
+    df['text'], df['label_idx'], test_size=0.2
+)
+
+# 4. Text Vectorization (Better coverage)
+vectorizer = layers.TextVectorization(
+    max_tokens=5000,
+    output_sequence_length=80
+)
+vectorizer.adapt(train_text.to_numpy())
+
+# 5. Build Model
+model = tf.keras.Sequential([
+    vectorizer,
+    layers.Embedding(input_dim=5000, output_dim=64),
+    layers.GlobalAveragePooling1D(),
+    layers.Dropout(0.2),
+    layers.Dense(64, activation='relu'),
+    layers.Dense(num_classes, activation='softmax')
+])
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+
+model.fit(train_text.to_numpy(), train_labels.to_numpy(), epochs=30, verbose=1)
+
