@@ -1,0 +1,105 @@
+from collections import defaultdict
+import math
+
+
+
+
+corpus = [
+    "i love natural language processing",
+    "i love machine learning",
+    "natural language processing is fun",
+    "machine learning is powerful"
+]
+
+
+
+
+tokenized_corpus = []
+
+
+for sentence in corpus:
+    tokens = ["<s>"] + sentence.lower().split() + ["</s>"]
+    tokenized_corpus.append(tokens)
+
+
+
+
+unigram_counts = defaultdict(int)
+bigram_counts = defaultdict(int)
+
+
+for tokens in tokenized_corpus:
+    for i in range(len(tokens)):
+        unigram_counts[tokens[i]] += 1
+
+
+        if i < len(tokens) - 1:
+            bigram = (tokens[i], tokens[i + 1])
+            bigram_counts[bigram] += 1
+
+
+
+
+vocab = set(unigram_counts.keys())
+V = len(vocab)
+
+
+
+
+def unigram_probability(word):
+    return (unigram_counts[word] + 1) / (sum(unigram_counts.values()) + V)
+
+
+
+
+def bigram_probability(w1, w2):
+    return (bigram_counts[(w1, w2)] + 1) / (unigram_counts[w1] + V)
+
+
+
+
+def sentence_probability(sentence):
+    tokens = ["<s>"] + sentence.lower().split() + ["</s>"]
+
+
+    probability = 1.0
+
+
+    for i in range(len(tokens) - 1):
+        prob = bigram_probability(tokens[i], tokens[i + 1])
+        probability *= prob
+
+
+    return probability
+
+
+
+
+print("UNIGRAM PROBABILITIES\n")
+
+
+for word in vocab:
+    print(f"P({word}) = {unigram_probability(word):.4f}")
+
+
+
+
+print("\nBIGRAM PROBABILITIES\n")
+
+
+for bigram in bigram_counts:
+    w1, w2 = bigram
+    print(f"P({w2} | {w1}) = {bigram_probability(w1, w2):.4f}")
+
+
+
+
+test_sentence = "i love machine learning"
+
+
+prob = sentence_probability(test_sentence)
+
+
+print("\nTEST SENTENCE")
+print("Sentence:", test_sentence)
+print("Sentence Probability:", prob)
