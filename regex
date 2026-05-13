@@ -1,0 +1,82 @@
+Question 2: Use regex patterns to extract the usernames from the email addresses, hashtags, dates,
+and phone numbers present in a given text.
+
+
+
+corpus = (
+"Hello Students! Welcome to the NLP laboratory session 2026. "
+"You can contact the instructor at xyz@kmv.edu.in or lab.support@kmv.org. "
+"For urgent queries, call +919812311111 or 0987111110. "
+"Course website: https://nlpxyz.edu/resources. "
+"Topics include tokenization, stemming, lemmatization and regex. "
+"Popular tags: #NLP #AI #TextMining. "
+"Note: Some students wrote wrote duplicate words in assignments. "
+"International examples: café, naïve, résumé. "
+"Emoji feedback: 😊 👍 🐍. "
+"Submission deadline is 25-01-2026. End."
+"The colour or text shall be blue. Any other color can be green. Do not use bright colr."
+)
+corpus
+
+re.findall(r'\w+[@]',corpus)
+
+
+import re
+re.findall(r'\w+[@]\w+[.]\w+[.]\w+',corpus)  #email
+
+re.findall(r"\b\w*[éï]\w*\b",corpus) #café, naïve, résumé.
+
+
+re.findall(r"#\w+",corpus) #hashtag
+
+re.findall(r"\d{2}-\d{2}-\d{4}",corpus) #date
+
+re.findall(r"[+]?\d{10,12}",corpus) #phone number
+
+re.findall(r"[https|http]+?://\w+[.]\w+[/]\w+[.]",corpus)  #https://nlpxyz.edu/resources
+
+re.findall(r"[\U0001f600-\U0001f64f]+",corpus,flags=re.UNICODE)
+
+re.findall(r'[\U0001F600-\U0001F64F' # Emoticons
+                                r'\U0001F300-\U0001F5FF' # Misc Symbols and Pictographs
+                                r'\U0001F680-\U0001F6FF' # Transport and Map
+                                r'\U0001F1E0-\U0001F1FF' # Flags (iOS)
+                                r'\U00002600-\U000027BF]+' # Misc symbols
+                                r'',corpus,flags=re.UNICODE)
+
+
+
+print(re.match(r"NLP", corpus)) #begin string
+
+
+
+print(re.search(r"NLP", corpus)) #anywhere in string
+
+
+
+print(re.findall(r"\b[A-Z][a-z]+", corpus)) #words
+
+
+
+print(re.findall(r"\d+", corpus)) #digits
+
+
+
+
+for m in re.finditer(r"\+?\d{10,12}", corpus):
+    print(m.group(), m.span())    #phone number with position
+
+
+
+print(re.sub(r"\w+[\.-]?\w+@\w+\.\w+", "[EMAIL]", corpus)) #replcae email adress with EMAIL
+print(re.sub(r"\+?\d{10,12}", "[PHONE]", corpus, count=1)) #replace phone only for 1
+
+
+re.findall(r"NLP|AI|regex",corpus) #or oprator
+
+
+print(re.search(r"End\.$",corpus))
+
+print(re.search(r"colr\.$",corpus))
+
+re.findall(r'[^A-Za-z0-9+\s]',corpus) #extract punctuation
