@@ -1,0 +1,61 @@
+
+import nltk
+nltk.download('punkt_tab')
+nltk.download('stopwords')
+import spacy
+!python -m spacy download en_core_web_sm
+
+corpus="""
+Natural Language Processing (NLP) is one of the most important fields of Artificial Intelligence.It helps computers understand, interpret, and generate human language."""
+print (corpus)
+
+def token_generate(corpus):
+  from nltk.tokenize import word_tokenize
+  tokens=word_tokenize(corpus)
+  print("Generated tokens:",tokens)
+  print("\nNumber of tokens: ",len(tokens))
+  return tokens
+
+def token_to_lower(tokens):
+  tokens_lower=[word.lower() for word in tokens if word.isalpha()]
+  print(tokens_lower)
+  return tokens_lower
+
+
+
+def Stopwords(tokens_lower):
+  from nltk.corpus import stopwords
+  stop_words=set(stopwords.words('english'))
+  filtered_tokens=[word for word in tokens_lower if word not in stop_words]
+  print("\nFiltered Tokens :",filtered_tokens)
+  print("\nNumber of Filtered Tokens:",len(filtered_tokens))
+  return filtered_tokens
+
+def Stemming(filtered_tokens):
+  from nltk.stem import PorterStemmer
+  stemmer=PorterStemmer()
+  stemmmed_tokens=[stemmer.stem(word) for word in filtered_tokens]
+  print("\nToken after Stemming; ",stemmmed_tokens)
+  return stemmmed_tokens
+
+def Lemmatization(filtered_tokens):
+  nlp=spacy.load("en_core_web_sm")
+  doc=nlp(" ".join(filtered_tokens))
+  lem_token=[token.lemma_ for token in doc]
+  print("\nToken after Lemmatization:",lem_token)
+  return lem_token
+
+
+
+def main(corpus):
+  tokens=token_generate(corpus)
+  tokens_lower=token_to_lower(tokens)
+  filtered_tokens=Stopwords(tokens_lower)
+  stemmmed_tokens=Stemming(filtered_tokens)
+  lem_token=Lemmatization(filtered_tokens)
+
+
+main(corpus)
+
+new_corpus="""Artifical Intelligence is transforming industries across the world. From healtcare to finance, intelligent systems are improving efficiency and decision making.However, ethical challenges such as data privavcy, algorithmic bias, and job displacement must be carefully addressed."""
+main(new_corpus)
